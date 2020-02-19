@@ -26,7 +26,7 @@
 ---
 9. Ссылка:				`#references`
 - Абсолютный путь:	https://animals.verybigencyclopedia.com/catalog/mammals/felidae/cats/british-shorthair/  
-  Будут отображен элемент текущей открытой страницы <a name="references"></a>  
+  Будут отображен элемент текущей открытой страницы `<a name="references"></a>`  
 ---
 10. Ссылка:				`../british-shorthair/gallery`
 - Абсолютный путь:	https://animals.verybigencyclopedia.com/catalog/mammals/felidae/cats/british-shorthair/gallery  
