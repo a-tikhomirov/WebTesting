@@ -32,7 +32,7 @@ echo `date` > $LINKS_ERR
 ( wget --spider --force-html -r -l $DEPTH -nd $1 2>&1 & echo $! >&3 ) 3>pid | grep -P "($LINK_STR)|$STATUS_STR" > $LINKS_TMP &
 WPID=`cat pid`
 rm pid
-echo $WPID
+
 echo Checking links...
 
 trap clean_stop INT
