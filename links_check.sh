@@ -18,7 +18,7 @@ LINK_PREV=""
 LINK_FOUNDED=1
 
 # Паттерн для определения валидной ссылки
-CODE_PTRN='(200|301|302)
+CODE_PTRN='(200|301|302)'
 
 # Создание/перезапись файлов для хранения результатов
 > $LINKS_TMP
@@ -32,58 +32,59 @@ echo `date` > $LINKS_ERR
 ( wget --spider --force-html -r -l $DEPTH -nd $1 2>&1 & echo $! >&3 ) 3>pid | grep -P "($LINK_STR)|$STATUS_STR" > $LINKS_TMP &
 WPID=`cat pid`
 rm pid
-
+echo $WPID
 echo Checking links...
 
 trap clean_stop INT
 
 function clean_stop() {
-        printf "\n Trapped CTRL-C\n"
-        kill $WPID
+    printf "\n Trapped CTRL-C\n"
+    kill $WPID
 }
 
 function check_done() {
-        echo `date` >> $LINKS_ALL
-        echo `date` >> $LINKS_ERR
-        printf "\nChecked %s links\n" $((`cat $LINKS_ALL | wc -l` - 2))
+    echo `date` >> $LINKS_ALL
+    echo `date` >> $LINKS_ERR
+    printf "\nChecked %s links\n" $((`cat $LINKS_ALL | wc -l` - 2))
 }
 
 # Построчное чтение файла
 tail -0f $LINKS_TMP | while read str
 do
-        # Проверка - содержит ли текущая строка URL адрес
-        temp_str=`echo $str | grep "$LINK_STR"`
-        [[ $? -eq 0 ]] &&
-                link=`echo $temp_str | awk '{ print $3 }'` &&
-                LINK_FOUNDED=0
+    # Проверка - содержит ли текущая строка URL адрес
+    temp_str=`echo $str | grep "$LINK_STR"`
+    [[ $? -eq 0 ]] &&
+        link=`echo $temp_str | awk '{ print $3 }'` &&
+        LINK_FOUNDED=0
 
-        if [ ! "$link" == "$LINK_PREV" ]; then
-                # Вывод в stdout текущего действия по проверке ссылок
-                echo $str
+    if [ ! "$link" == "$LINK_PREV" ]; then
+        # Вывод в stdout текущего действия по проверке ссылок
+        echo $str
 
-                # Если был найден URL адрес - записать в файл и продолжить
-                [[ $LINK_FOUNDED -eq 0 ]] &&
-                        printf "%s\t" $link >> $LINKS_ALL &&
-                        LINK_FOUNDED=1 &&
-                        continue
+        # Если был найден URL адрес - записать в файл и продолжить
+        [[ $LINK_FOUNDED -eq 0 ]] &&
+            printf "%s\t" $link >> $LINKS_ALL &&
+            LINK_FOUNDED=1 &&
+            continue
 
-                # Проверка - содержит ли текущая строка код статуса
-                temp_str=`echo $str | grep -P "$STATUS_STR"`
-                if [[ $? -eq 0 ]]; then
-                        # Если был найден код статуса - запись в файл
-                        status_code=`echo $temp_str | awk -F. '{print $NF}' | cut -c 2-` &&
-                                printf "%s\n" "$status_code" >> $LINKS_ALL
+        # Проверка - содержит ли текущая строка код статуса
+        temp_str=`echo $str | grep -P "$STATUS_STR"`
+        if [[ $? -eq 0 ]]; then
+            # Если был найден код статуса - запись в файл
+            status_code=`echo $temp_str | awk -F. '{print $NF}' | cut -c 2-` &&
+                printf "%s\n" "$status_code" >> $LINKS_ALL
 
-                        # Проверка кода статуса на валидность
-                        # Если статус не 200, 301, 203 - запись в файл с битыми ссылками
-                        echo $status_code | grep -P "$CODE_PTRN" > /dev/null ||
-                                printf "%s\t\t%s\n" $link "$status_code" >> $LINKS_ERR
+            # Проверка кода статуса на валидность
+            # Если статус не 200, 301, 203 - запись в файл с битыми ссылками
+            echo $status_code | grep -P "$CODE_PTRN" > /dev/null ||
+                printf "%s\t\t%s\n" $link "$status_code" >> $LINKS_ERR
 
-                        # Вспомогательная переменная для пропуска повторных
-                        # проверок URL адреса (которые проводятся для поиска ссылок по URL)
-                        LINK_PREV=$link
-                fi
+            # Вспомогательная переменная для пропуска повторных
+            # проверок URL адреса (которые проводятся для поиска ссылок по URL)
+            LINK_PREV=$link
         fi
+    fi
+    kill -0 $WPID &>/dev/null || break
 done
 
 check_done
