@@ -70,7 +70,7 @@ for i in $(seq 1 `cat .src|wc -l`); do
     # то размер изображения для сравнения будет приведен к размеру эталонного без удаления исходного
     if [[ ! $src_size == $cmp_size ]]; then
         cmp_image=$(sed -n "$i"p .cmp|awk -F/ '{print $NF}')
-        echo ...Sizes not equal, resing \'$cmp_image\' to \'$src_size\'
+        echo ...Sizes not equal, resizing \'$cmp_image\' to \'$src_size\'
         convert $(sed -n "$i"p .cmp) -resize $src_size! img_tmp/$cmp_image
         cmp_image=img_tmp/$cmp_image
     fi        
