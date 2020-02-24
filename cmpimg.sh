@@ -77,8 +77,8 @@ for i in $(seq 1 `cat .src|wc -l`); do
     
     prefix=$(sed -n "$i"p .src|awk -F/ '{print $NF}'|cut -d_ -f1)
 
-    compare -compose src $src_image $cmp_image $out_dir/${prefix}_compare_result
-    printf "Compare result:\t\t%s\n\n" "$out_dir/${prefix}_compare_result"
+    compare -compose src $src_image $cmp_image $out_dir/${prefix}_compare_result.jpg
+    printf "Compare result:\t\t%s\n\n" "$out_dir/${prefix}_compare_result.jpg"
 done
 
 rm .src .cmp
