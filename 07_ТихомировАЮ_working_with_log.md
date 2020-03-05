@@ -72,7 +72,7 @@ LOG_FILE='/opt/bitnami/apache2/logs/access_log'
 
 for source_ip in $(cat $LOG_FILE | cut -d' ' -f1 | sort | uniq);
 do
-    ip_count=$(grep -c $source_ip $LOG_FILE)
+    ip_count=$(grep -wc $source_ip $LOG_FILE)
     printf "Source ip:\t%s\t\tAccess count:\t%s\n" $source_ip $ip_count
 done
 ```
@@ -82,9 +82,9 @@ done
 ```ShellSession
 bitnami@debian:/opt/bitnami/apache2/logs$ cat access_log | wc -l
 1676
-bitnami@debian:/opt/bitnami/apache2/logs$ ~/bin/count_access.sh
-Source ip:      192.168.41.2            Access count:   1607
-Source ip:      192.168.41.249          Access count:   757
+bitnami@debian:~/bin$ ./count_access.sh
+Source ip:      192.168.41.2            Access count:   962
+Source ip:      192.168.41.249          Access count:   642
 Source ip:      192.168.41.5            Access count:   72
 ```
 
